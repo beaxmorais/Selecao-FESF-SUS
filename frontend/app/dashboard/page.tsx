@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 import { ProtectedPage } from "@/components/layout";
 import { Badge, Card, LoadingState, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
+import { canCreateReferral } from "@/lib/permissions";
 import { priorityTone } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import { DashboardReport, PRIORITY_LABELS, STATUS_LABELS } from "@/types";
 
 export default function DashboardPage() {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
   const [report, setReport] = useState<DashboardReport | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,9 +85,11 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-500">Acesse os módulos principais do sistema</p>
               </div>
               <div className="flex gap-2">
-                <Link href="/encaminhamentos/novo" className="rounded-lg bg-primary-600 px-4 py-2 text-sm text-white">
-                  Novo encaminhamento
-                </Link>
+                {canCreateReferral(user) && (
+                  <Link href="/encaminhamentos/novo" className="rounded-lg bg-primary-600 px-4 py-2 text-sm text-white">
+                    Novo encaminhamento
+                  </Link>
+                )}
                 <Link href="/encaminhamentos" className="rounded-lg border border-gray-300 px-4 py-2 text-sm">
                   Ver encaminhamentos
                 </Link>

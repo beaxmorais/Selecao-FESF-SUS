@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { ProtectedPage, RoleGuard } from "@/components/layout";
+import { ProtectedPage } from "@/components/layout";
 import { Badge, Button, Card, EmptyState, LoadingState, PageHeader, Select } from "@/components/ui";
 import { api } from "@/lib/api";
+import { canCreateReferral } from "@/lib/permissions";
 import { priorityTone, statusTone } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import { PRIORITY_LABELS, Referral, ReferralStatus, STATUS_LABELS } from "@/types";
 
 export default function ReferralsPage() {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
@@ -41,11 +42,11 @@ export default function ReferralsPage() {
         title="Encaminhamentos"
         description="Lista de solicitações hematológicas com filtros por status e prioridade"
         action={
-          <RoleGuard roles={["admin", "requester"]}>
+          canCreateReferral(user) ? (
             <Link href="/encaminhamentos/novo">
               <Button>Novo encaminhamento</Button>
             </Link>
-          </RoleGuard>
+          ) : undefined
         }
       />
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { NavLink } from "@/components/ui";
 import { useAuthStore } from "@/stores/authStore";
@@ -31,21 +31,20 @@ function MessageBanner() {
 
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated, fetchMe, token } = useAuthStore();
-
-  useEffect(() => {
-    if (token) {
-      fetchMe();
-    }
-  }, [token, fetchMe]);
+  const { fetchMe, token, user } = useAuthStore();
+  const [checking, setChecking] = useState(Boolean(token));
 
   useEffect(() => {
     if (!token) {
+      setChecking(false);
       router.replace("/login");
+      return;
     }
-  }, [token, router]);
 
-  if (!isAuthenticated || !token) {
+    fetchMe().finally(() => setChecking(false));
+  }, [token, fetchMe, router]);
+
+  if (!token || checking || !user) {
     return null;
   }
 

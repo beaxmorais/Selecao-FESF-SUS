@@ -1,10 +1,22 @@
-# Sistema de Triagem Hematológica
+# Sistema de Triagem Hematológica — Portfólio FESF SUS
 
-## Visão do projeto e motivação
+Repositório principal do portfólio **Seleção FESF-SUS**: sistema web completo para regulação de encaminhamentos hematológicos no SUS, com critérios padronizados, pontuação automática de prioridade e revisão auditável por reguladores.
 
-Sistema web para apoiar a regulação de encaminhamentos hematológicos no SUS. A proposta reduz subjetividade por meio de critérios padronizados, pontuação automática de prioridade e revisão auditável por reguladores.
+**Stack:** FastAPI + SQLAlchemy + PostgreSQL (backend) | Next.js + Zustand + Tailwind (frontend) | Docker Compose
 
-## Explicação geral do sistema
+## Portfólio de repositórios
+
+Este é o **produto principal**. Os repositórios abaixo comprovam competências específicas do BAREMA sobre o mesmo domínio:
+
+| Item | Repositório | Foco |
+|------|-------------|------|
+| **01** | [Selecao-FESF-SUS-1-F.C](https://github.com/beaxmorais/Selecao-FESF-SUS-1-F.C) | FastAPI + SQLAlchemy + Next.js + Zustand |
+| **02** | [Selecao-FESF-SUS-2-F.C](https://github.com/beaxmorais/Selecao-FESF-SUS-2-F.C) | Docker + OAuth2/JWT |
+| **03** | [Selecao-FESF-SUS-3-F.C](https://github.com/beaxmorais/Selecao-FESF-SUS-3-F.C) | Redis/cache |
+| **04** | [Selecao-FESF-SUS-4-F.C](https://github.com/beaxmorais/Selecao-FESF-SUS-4-F.C) | Testes Pytest (unitários + integração) |
+| **Geral** | **Este repositório** | Sistema completo de triagem/regulação |
+
+## Visão do projeto
 
 A aplicação permite que unidades solicitantes cadastrem pacientes e encaminhamentos com sinais clínicos e exames laboratoriais. O backend calcula automaticamente a prioridade com base em regras explícitas. Reguladores revisam, confirmam ou ajustam a prioridade com justificativa. Administradores gerenciam usuários e acessam indicadores gerais.
 
@@ -12,10 +24,6 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
 - **Solicitante (`requester`)**: cadastra pacientes e encaminhamentos
 - **Regulador (`regulator`)**: avalia e define prioridade final
 - **Administrador (`admin`)**: gerencia usuários e visualiza todo o sistema
-
-**Solicitante vs. Regulador:** o solicitante cria e envia encaminhamentos da unidade de saúde (pacientes, exames e critérios clínicos). O regulador analisa o que foi enviado, confirma ou ajusta a prioridade e decide aprovar, devolver, agendar ou cancelar — sempre com justificativa quando necessário.
-
-**Stack:** FastAPI + SQLAlchemy + PostgreSQL (backend) | Next.js + Zustand + Tailwind (frontend)
 
 ## Diagrama de arquitetura
 
@@ -31,7 +39,7 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
                                       └─────────────────┘
 ```
 
-## Setup via Docker
+## Setup via Docker (recomendado)
 
 ### Pré-requisitos
 
@@ -48,7 +56,7 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
 
 3. Suba os serviços:
    ```bash
-   docker compose up -d
+   docker compose up --build -d
    ```
 
 4. Execute as migrations:
@@ -73,7 +81,34 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
 | Solicitante | solicitante@example.com    | solicit123 |
 | Regulador   | regulador@example.com      | regul123   |
 
-## Checklist de funcionalidades para avaliação
+## Setup local (sem Docker)
+
+### Backend
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+cp ..\.env.example ..\.env
+alembic upgrade head
+python -m app.seed
+uvicorn app.main:app --reload
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Configure `NEXT_PUBLIC_API_URL=http://localhost:8000` se necessário.
+
+## Checklist de funcionalidades
+
+Use este roteiro para validar o sistema completo:
 
 - [ ] Login/logout funcional com JWT
 - [ ] CRUD completo de pacientes e encaminhamentos
@@ -85,4 +120,104 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
 - [ ] PostgreSQL via Docker Compose
 - [ ] Migrations Alembic aplicáveis
 - [ ] Swagger documentado em `/docs`
-- [ ] Código em inglês, interface em português
+
+## Estrutura do projeto
+
+```
+Selecao-FESF-SUS/
+├── backend/          # API FastAPI + SQLAlchemy + Alembic
+├── frontend/         # Next.js + Zustand + Tailwind
+├── docker-compose.yml
+└── .env.example
+```
+
+
+## Endpoints principais
+
+- `POST /api/v1/auth/login` — OAuth2 (username = e-mail)
+- `GET /api/v1/auth/me`
+- CRUD `/api/v1/patients`
+- CRUD `/api/v1/referrals`
+- `POST /api/v1/referrals/{id}/submit`
+- `POST /api/v1/referrals/{id}/evaluate`
+- `GET /api/v1/reports/dashboard`
+
+## Diagrama das tabelas
+
+```mermaid
+erDiagram
+    USERS ||--o{ REFERRALS : "cria"
+    USERS ||--o{ EVALUATIONS : "avalia"
+    PATIENTS ||--o{ REFERRALS : "possui"
+    REFERRALS ||--o{ LAB_RESULTS : "inclui"
+    REFERRALS ||--o{ CLINICAL_CRITERIA : "registra"
+    REFERRALS ||--o{ EVALUATIONS : "recebe"
+
+    USERS {
+        int id PK
+        string email UK
+        string hashed_password
+        string full_name
+        enum role
+        string health_unit
+        boolean is_active
+        datetime created_at
+    }
+
+    PATIENTS {
+        int id PK
+        string full_name
+        string sus_card UK
+        date birth_date
+        enum sex
+        string city
+        string health_unit
+        datetime created_at
+    }
+
+    REFERRALS {
+        int id PK
+        int patient_id FK
+        int created_by_id FK
+        enum status
+        enum calculated_priority
+        enum final_priority
+        int priority_score
+        text reason
+        datetime created_at
+        datetime updated_at
+    }
+
+    LAB_RESULTS {
+        int id PK
+        int referral_id FK
+        string exam_name
+        float value
+        string unit
+        date collected_at
+    }
+
+    CLINICAL_CRITERIA {
+        int id PK
+        int referral_id FK
+        string criterion_key
+        boolean is_present
+        text notes
+    }
+
+    EVALUATIONS {
+        int id PK
+        int referral_id FK
+        int evaluator_id FK
+        enum decision
+        enum priority
+        text justification
+        datetime created_at
+    }
+``` 
+
+## Documentação adicional
+
+- [backend/README.md](backend/README.md) 
+
+
