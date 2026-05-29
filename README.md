@@ -136,9 +136,7 @@ npm run dev
 
 Configure `NEXT_PUBLIC_API_URL=http://localhost:8000` se necessário.
 
-## Checklist de funcionalidades
-
-Use este roteiro para validar o sistema completo:
+## Lista de funcionalidades
 
 - [ ] Login/logout funcional com JWT
 - [ ] CRUD completo de pacientes e encaminhamentos
@@ -164,7 +162,7 @@ Selecao-FESF-SUS/
 
 ## Endpoints principais
 
-- `POST /api/v1/auth/login` — OAuth2 (username = e-mail)
+- `POST /api/v1/auth/login` — OAuth2 
 - `GET /api/v1/auth/me`
 - CRUD `/api/v1/patients`
 - CRUD `/api/v1/referrals`
@@ -176,12 +174,12 @@ Selecao-FESF-SUS/
 
 ```mermaid
 erDiagram
-    USERS ||--o{ REFERRALS : "cria"
-    USERS ||--o{ EVALUATIONS : "avalia"
-    PATIENTS ||--o{ REFERRALS : "possui"
-    REFERRALS ||--o{ LAB_RESULTS : "inclui"
-    REFERRALS ||--o{ CLINICAL_CRITERIA : "registra"
-    REFERRALS ||--o{ EVALUATIONS : "recebe"
+    USERS ||--o{ REFERRALS
+    USERS ||--o{ EVALUATIONS
+    PATIENTS ||--o{ REFERRALS
+    REFERRALS ||--o{ LAB_RESULTS
+    REFERRALS ||--o{ CLINICAL_CRITERIA
+    REFERRALS ||--o{ EVALUATIONS
 
     USERS {
         int id PK
@@ -249,8 +247,6 @@ erDiagram
 ## Documentação adicional
 
 - [backend/README.md](backend/README.md) 
-
-Todo: refazer diagrama dos bancos e adicionar imagens das telas + explicações simples
 
 Visão geral do administrador: 
 
