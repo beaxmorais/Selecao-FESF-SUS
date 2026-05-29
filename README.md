@@ -174,12 +174,12 @@ Selecao-FESF-SUS/
 
 ```mermaid
 erDiagram
-    USERS ||--o{ REFERRALS
-    USERS ||--o{ EVALUATIONS
-    PATIENTS ||--o{ REFERRALS
-    REFERRALS ||--o{ LAB_RESULTS
-    REFERRALS ||--o{ CLINICAL_CRITERIA
-    REFERRALS ||--o{ EVALUATIONS
+    USERS ||--o{ REFERRALS : " "
+    USERS ||--o{ EVALUATIONS : " "
+    PATIENTS ||--o{ REFERRALS : " "
+    REFERRALS ||--o{ LAB_RESULTS : " "
+    REFERRALS ||--o{ CLINICAL_CRITERIA : " "
+    REFERRALS ||--o{ EVALUATIONS : " "
 
     USERS {
         int id PK
@@ -248,9 +248,13 @@ erDiagram
 
 - [backend/README.md](backend/README.md) 
 
-Visão geral do administrador: 
+Antes do login: 
 
-![Visão administrador](imgs/{A43576E3-6A2E-42EB-853F-4E40666768A6}.png)
+![Visão login](imgs/{A43576E3-6A2E-42EB-853F-4E40666768A6}.png)
+
+Visão do administrador: 
+
+![Visão do administrador](imgs/{BA80C7DA-E74C-49FF-92FF-41E1507455A0}.png)
 
 Visão geral do regulador: 
 
