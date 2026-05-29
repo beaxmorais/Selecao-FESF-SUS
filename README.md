@@ -25,6 +25,36 @@ A aplicação permite que unidades solicitantes cadastrem pacientes e encaminham
 - **Regulador (`regulator`)**: avalia e define prioridade final
 - **Administrador (`admin`)**: gerencia usuários e visualiza todo o sistema
 
+### Solicitante vs. Regulador
+
+Os dois perfis participam do mesmo fluxo de regulação, mas em momentos diferentes:
+
+| | Solicitante | Regulador |
+|---|-------------|-----------|
+| **Contexto** | Unidade de saúde solicitante (ex.: UBS) | Central de regulação |
+| **Papel** | Produz a solicitação de encaminhamento | Analisa e decide sobre a solicitação |
+| **Pacientes** | Cadastra, edita e consulta | Apenas consulta |
+| **Encaminhamentos** | Cria, edita (rascunho/devolvido), envia e exclui rascunhos | Consulta e avalia os enviados |
+| **Dados clínicos** | Preenche exames laboratoriais e critérios clínicos | Visualiza o que foi registrado |
+| **Prioridade** | Vê a prioridade calculada automaticamente pelo sistema | Confirma ou ajusta a prioridade final |
+| **Decisão final** | Não avalia | Aprova, devolve, agenda ou cancela — com justificativa quando necessário |
+
+**Fluxo resumido:**
+
+```
+Solicitante                         Regulador
+    │                                   │
+    ├─ Cadastra paciente                │
+    ├─ Cria encaminhamento              │
+    ├─ Informa exames e critérios       │
+    ├─ Sistema calcula prioridade       │
+    └─ Envia para regulação ──────────► ├─ Analisa o caso
+                                          ├─ Define prioridade final
+                                          └─ Registra decisão e justificativa
+```
+
+O **administrador** concentra as permissões do solicitante e do regulador, além de gerenciar usuários e acessar todas as áreas do sistema.
+
 ## Diagrama de arquitetura
 
 ```
@@ -220,4 +250,16 @@ erDiagram
 
 - [backend/README.md](backend/README.md) 
 
+Todo: refazer diagrama dos bancos e adicionar imagens das telas + explicações simples
 
+Visão geral do administrador: 
+
+![Visão administrador](imgs/{A43576E3-6A2E-42EB-853F-4E40666768A6}.png)
+
+Visão geral do regulador: 
+
+![Visão geral do regulador](imgs/{BDA03CDD-A28C-45F2-AD2C-E7E569A948A7}.png)
+
+Visão geral do solicitante: 
+
+![Visão geral do solicitante](imgs/{6C161EE4-1865-4A5B-B709-4A8A7D254BAE}.png)
